@@ -12,7 +12,7 @@ export function rateLimitMiddleware(
 
   if (requestTimestamps.has(clientIp)) {
     const lastRequestTime = requestTimestamps.get(clientIp) || 0;
-    if (currentTime - lastRequestTime < 100) {
+    if (currentTime - lastRequestTime < 1000) {
       console.log(
         "Payment Required. Please wait before making another request."
       );

@@ -1,17 +1,15 @@
 import express from "express";
-import videoRoutes from "./interfaces/routes/videoRoutes";
+import videoRoutes from "./videoRoutes";
 import cors from "cors";
-import { rateLimitMiddleware } from "./middleware/rateLimitMiddleware";
 
 const app = express();
-const PORT = 3000;
+const PORT = 8000;
 
 app.use(cors());
-
-app.use(rateLimitMiddleware);
-
-app.use("/api", videoRoutes);
+app.use("/", videoRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
+
+export default app;
