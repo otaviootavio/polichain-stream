@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-const requestTimestamps: Map<string, number> = new Map();
+const requestData: Map<string, [number, number]> = new Map();
 
 export function rateLimitMiddleware(
   req: Request,
@@ -10,19 +10,32 @@ export function rateLimitMiddleware(
   const currentTime: number = Date.now();
   const clientIp: string = req.ip || "0";
 
-  if (requestTimestamps.has(clientIp)) {
-    const lastRequestTime = requestTimestamps.get(clientIp) || 0;
-    if (currentTime - lastRequestTime < 1000) {
-      console.log(
-        "Payment Required. Please wait before making another request."
-      );
-      res
-        .status(402)
-        .send("Payment Required. Please wait before making another request.");
-      return;
-    }
+  if (!requestData.has(clientIp)) {
+    requestData.set(clientIp, [currentTime, 0]);
+    next();
+    return;
   }
 
-  requestTimestamps.set(clientIp, currentTime);
+  const ipData = requestData.get(clientIp) || [0, 0];
+  const lastRequestTime = ipData[0];
+  const lastCount = ipData[1];
+  console.log(ipData.toString());
+
+  if (currentTime - lastRequestTime > 5000) {
+    console.log("Reset counter");
+    requestData.set(clientIp, [currentTime, 0]);
+    next();
+    return;
+  }
+
+  if (lastCount > 3) {
+    console.log("Too many requests");
+    res
+      .status(402)
+      .send("Payment Required. Please wait before making another request.");
+    return;
+  }
+
+  requestData.set(clientIp, [currentTime, lastCount + 1]);
   next();
 }
