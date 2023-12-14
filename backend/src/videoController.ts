@@ -3,10 +3,6 @@ import { createReadStream, exists, promises, readFile } from "fs";
 import path from "path";
 import { gzip } from "zlib";
 
-const serveVideoPlayer = (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "./views/videoPlayer.html"));
-};
-
 const serveM3U8Content = async (req: Request, res: Response) => {
   const uri = req.url;
   const base_path = path.resolve(__dirname, "../videos");
@@ -77,4 +73,4 @@ const serveTSContent = async (req: Request, res: Response) => {
   }
 };
 
-export { serveVideoPlayer, serveM3U8Content, serveTSContent };
+export { serveM3U8Content, serveTSContent };
